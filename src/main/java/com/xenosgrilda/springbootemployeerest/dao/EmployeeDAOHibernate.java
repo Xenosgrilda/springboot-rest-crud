@@ -5,28 +5,26 @@ import org.hibernate.Session;
 import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import java.util.List;
 
 @Repository
-public class EmployeeDAO implements EmployeeDAOInterface {
+public class EmployeeDAOHibernate implements EmployeeDAOInterface {
 
     private EntityManager entityManager;
 
     // Here we're using Constructor Injection of the EntityManager Bean
     @Autowired
-    public EmployeeDAO(EntityManager entityManager) {
+    public EmployeeDAOHibernate(EntityManager entityManager) {
         this.entityManager = entityManager;
     }
 
     @Override
-    @Transactional // Make sure to choose the org.springframework.transaction.annotation.Transactional
     public List<Employee> findAll() {
 
         // Getting the current Hibernate Session
-        Session session = entityManager.unwrap(Session.class);
+        Session session = this.entityManager.unwrap(Session.class);
 
         // Creating query
         // In this example we're using the native Hibernate API
@@ -34,6 +32,39 @@ public class EmployeeDAO implements EmployeeDAOInterface {
 
         // Executing Query and getting result list
         return query.getResultList();
+    }
+
+    @Override
+    public Employee find(int id) {
+
+        Session session = this.entityManager.unwrap(Session.class);
+
+        return session.get(Employee.class, id);
+    }
+
+    @Override
+    public void add(Employee newEmp) {
+
+        Session session = this.entityManager.unwrap(Session.class);
+
+        session.saveOrUpdate(newEmp);
+    }
+
+    @Override
+    public void update(Employee updatedEmployee) {
+        Session session = this.entityManager.unwrap(Session.class);
+
+        session.saveOrUpdate(updatedEmployee);
+    }
+
+    @Override
+    public void delete(int id) {
+        Session session = this.entityManager.unwrap(Session.class);
+
+        Query query = session.createQuery("DELETE FROM Employee WHERE id = :empId");
+        query.setParameter("empId", id);
+
+        query.executeUpdate();
     }
 }
 
@@ -45,4 +76,8 @@ public class EmployeeDAO implements EmployeeDAOInterface {
 /**
  * Remember that SpringBoot created the "EntityManager" automatically for us based on our pom.xml and application.properties
  * We can make use of this Bean, and therefore, making calls to DB using JPA implementation.
+ */
+
+/**
+ * It seems that this class "HibernateJpaAutoConfiguration" creates automatically the "EntityManagerFactory" for us
  */
