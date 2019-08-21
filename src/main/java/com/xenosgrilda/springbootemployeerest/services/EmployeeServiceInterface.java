@@ -6,9 +6,8 @@ import java.util.List;
 
 public interface EmployeeServiceInterface {
 
-    List<Employee> getList();
-    Employee getSingle(int id);
-    void add(Employee newEmployee);
-    void delete(int id);
-    void update(Employee updatedEmployee);
+    List<Employee> findAll();
+    Employee findById(int id);
+    void save(Employee newEmployee);
+    void deleteById(int id);
 }

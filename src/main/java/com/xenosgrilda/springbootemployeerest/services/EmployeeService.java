@@ -1,53 +1,64 @@
 package com.xenosgrilda.springbootemployeerest.services;
 
-import com.xenosgrilda.springbootemployeerest.dao.EmployeeDAOHibernate;
-import com.xenosgrilda.springbootemployeerest.dao.EmployeeDAOInterface;
+import com.xenosgrilda.springbootemployeerest.dao.EmployeeDAOJPARepository;
 import com.xenosgrilda.springbootemployeerest.entities.Employee;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class EmployeeService implements EmployeeServiceInterface {
 
-//    private EmployeeDAOHibernate employeeDAO;
-    // Switching to JPA DAO
-    private EmployeeDAOInterface employeeDAO;
+    // Hibernate JPA DAO
+    // private EmployeeDAOHibernate employeeDAO;
+
+    // Standard JPA DAO
+    // private EmployeeDAOInterface employeeDAO;
+
+    // Switching to JpaRepository
+    private EmployeeDAOJPARepository employeeRepository;
 
     @Autowired
-    // Using @Qualifier because there's more than 1 @Bean that implements EmployeeDAOInterface
-    public EmployeeService(@Qualifier("employeeDAOJPA") EmployeeDAOInterface employeeDAO){
-        this.employeeDAO = employeeDAO;
+    public EmployeeService(EmployeeDAOJPARepository employeeDAO){
+        this.employeeRepository = employeeDAO;
     }
 
     @Override
-    public List<Employee> getList() {
-        return this.employeeDAO.findAll();
+    public List<Employee> findAll() {
+        return this.employeeRepository.findAll();
     }
 
     @Override
-    public Employee getSingle(int id) {
-        return this.employeeDAO.find(id);
+    public Employee findById(int id) {
+        Optional<Employee> result = this.employeeRepository.findById(id);
+
+        Employee employee = null;
+
+        if (result.isPresent()){
+            employee = result.get();
+        } else {
+
+            throw new RuntimeException("Employee id: " + id + " was not found");
+        }
+
+        return employee;
     }
 
     @Override
-    @Transactional
-    public void add(Employee newEmployee) {
-        this.employeeDAO.add(newEmployee);
+    public void save(Employee newEmployee) {
+        this.employeeRepository.save(newEmployee);
     }
 
     @Override
-    @Transactional // Make sure to choose the org.springframework.transaction.annotation.Transactional
-    public void delete(int id) {
-        this.employeeDAO.delete(id);
-    }
-
-    @Override
-    @Transactional
-    public void update(Employee updateEmployee) {
-        this.employeeDAO.update(updateEmployee);
+    public void deleteById(int id) {
+        this.employeeRepository.deleteById(id);
     }
 }
+
+/**
+ * Two changes were made to this file:
+ * - Removed "@Qualifier" from the constructor since we don't use an interface implemented by 2 classes
+ * - Removed @Transactional since JpaRepository provide this functionality
+ */

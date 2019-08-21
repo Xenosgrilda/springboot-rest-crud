@@ -27,25 +27,20 @@ public class EmployeeDAOJPA implements EmployeeDAOInterface {
     }
 
     @Override
-    public Employee find(int id) {
+    public Employee findById(int id) {
         return this.entityManager.find(Employee.class, id);
     }
 
-    @Override
-    public void add(Employee newEmp) {
-
-        this.entityManager.persist(newEmp);
-    }
 
     @Override
-    public void update(Employee updatedEmployee) {
+    public void save(Employee updatedEmployee) {
 
         // If this employee has the Id registered in DB it will update otherwise create, same as saveOrUpdate()
         this.entityManager.merge(updatedEmployee);
     }
 
     @Override
-    public void delete(int id) {
+    public void deleteById(int id) {
 
         Query query = this.entityManager.createQuery("DELETE FROM Employee WHERE id = :empId");
         query.setParameter("empId", id);

@@ -14,24 +14,24 @@ import java.util.List;
 @RequestMapping("/api")
 public class EmployeeController {
 
-    private EmployeeService employeeServiceHibernate;
+    private EmployeeService employeeService;
 
     @Autowired
     public EmployeeController(EmployeeService employeeServiceHibernate) {
-        this.employeeServiceHibernate = employeeServiceHibernate;
+        this.employeeService = employeeServiceHibernate;
     }
 
     // ===== GET =====
     @GetMapping("/employees")
     public List<Employee> getEmployees() {
 
-        return this.employeeServiceHibernate.getList();
+        return this.employeeService.findAll();
     }
 
     @GetMapping("/employees/{id}")
     public Employee getEmployee(@PathVariable int id) {
 
-        return this.employeeServiceHibernate.getSingle(id);
+        return this.employeeService.findById(id);
     }
 
     // ===== POST =====
@@ -41,7 +41,7 @@ public class EmployeeController {
         // Setting ID to "0" so it always create a new Employee and not update
         newEmployee.setId(0);
 
-        this.employeeServiceHibernate.add(newEmployee);
+        this.employeeService.save(newEmployee);
 
         return newEmployee;
     }
@@ -49,10 +49,9 @@ public class EmployeeController {
     // ===== PUT =====
     @PutMapping("/employees")
     public Employee updateEmployee(@RequestBody @NotNull Employee updatedEmployee) {
-
-        // Here, since we're using the "updatedEmployee" id, the method saveOrUpdate of "EmployeeDAO" will notice it has
+        
         // An registered ID and will perform an update
-        this.employeeServiceHibernate.update(updatedEmployee);
+        this.employeeService.save(updatedEmployee);
 
         return updatedEmployee;
     }
@@ -61,7 +60,7 @@ public class EmployeeController {
     @DeleteMapping("/employees/{id}")
     public ResponseEntity<String> deleteEmployee(@PathVariable int id) {
 
-        this.employeeServiceHibernate.delete(id);
+        this.employeeService.deleteById(id);
 
         return new ResponseEntity<>("Employee " + id + " deleted.", HttpStatus.OK);
     }

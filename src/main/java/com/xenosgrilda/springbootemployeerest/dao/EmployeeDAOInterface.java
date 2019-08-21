@@ -7,8 +7,7 @@ import java.util.List;
 public interface EmployeeDAOInterface {
 
     List<Employee> findAll();
-    Employee find(int id);
-    void add(Employee newEmp);
-    void update(Employee updatedEmployee);
-    void delete(int id);
+    Employee findById(int id);
+    void save(Employee updatedEmployee);
+    void deleteById(int id);
 }

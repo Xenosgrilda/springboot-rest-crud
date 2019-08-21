@@ -35,7 +35,7 @@ public class EmployeeDAOHibernate implements EmployeeDAOInterface {
     }
 
     @Override
-    public Employee find(int id) {
+    public Employee findById(int id) {
 
         Session session = this.entityManager.unwrap(Session.class);
 
@@ -43,7 +43,7 @@ public class EmployeeDAOHibernate implements EmployeeDAOInterface {
     }
 
     @Override
-    public void add(Employee newEmp) {
+    public void save(Employee newEmp) {
 
         Session session = this.entityManager.unwrap(Session.class);
 
@@ -51,14 +51,7 @@ public class EmployeeDAOHibernate implements EmployeeDAOInterface {
     }
 
     @Override
-    public void update(Employee updatedEmployee) {
-        Session session = this.entityManager.unwrap(Session.class);
-
-        session.saveOrUpdate(updatedEmployee);
-    }
-
-    @Override
-    public void delete(int id) {
+    public void deleteById(int id) {
         Session session = this.entityManager.unwrap(Session.class);
 
         Query query = session.createQuery("DELETE FROM Employee WHERE id = :empId");
